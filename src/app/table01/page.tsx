@@ -339,7 +339,7 @@ function Page() {
             Next
           </Button>
           <Button variant="outline" size="sm" onClick={() => handleTest()}>
-            테스트 확인
+            선택셀 디버깅
           </Button>
         </div>
       </div>

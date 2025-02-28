@@ -86,3 +86,8 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+/* 다이얼로그 오버레이 배경색 조정 */
+[data-radix-dialog-overlay] {
+  background-color: rgba(0, 0, 0, 0.3) !important; /* 덜 어두운 배경으로 설정 */
+}
