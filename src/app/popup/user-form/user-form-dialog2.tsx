@@ -66,13 +66,6 @@ export function UserFormDialog2({ onSubmit }: UserFormDialog2Props) {
   const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
   const [errorField, setErrorField] = React.useState<string | null>(null);
   
-  // 각 필드에 대한 참조 생성
-  const nameRef = React.useRef<HTMLInputElement>(null);
-  const emailRef = React.useRef<HTMLInputElement>(null);
-  const phoneRef = React.useRef<HTMLInputElement>(null);
-  const genderRef = React.useRef<HTMLDivElement>(null);
-  const ageRef = React.useRef<HTMLButtonElement>(null);
-
   // 폼 초기화
   const form = useForm<UserFormData>({
     resolver: zodResolver(formSchema),
@@ -81,9 +74,31 @@ export function UserFormDialog2({ onSubmit }: UserFormDialog2Props) {
       email: "",
       phone: "",
     },
-    // 인라인 오류 메시지를 표시하지 않도록 설정
     mode: "onSubmit",
   });
+
+  // 필드 포커스를 처리하는 공통 함수
+  const focusField = (fieldName: string) => {
+    setTimeout(() => {
+      // 필드 이름에 해당하는 입력 요소 찾기
+      const inputElement = document.querySelector(`input[name="${fieldName}"], 
+                                                  [role="radiogroup"][id="${fieldName}"], 
+                                                  [id="${fieldName}"]`);
+      
+      if (inputElement) {
+        // 요소가 존재하면 해당 요소로 스크롤 및 포커스
+        (inputElement as HTMLElement).scrollIntoView({ 
+          behavior: "smooth", 
+          block: "center" 
+        });
+        
+        // 입력 필드의 경우 포커스도 설정
+        if ('focus' in inputElement) {
+          (inputElement as HTMLElement).focus();
+        }
+      }
+    }, 0);
+  };
 
   // 폼 제출 처리
   function handleSubmit(values: UserFormData) {
@@ -111,29 +126,10 @@ export function UserFormDialog2({ onSubmit }: UserFormDialog2Props) {
   const handleErrorDialogClose = () => {
     setErrorDialogOpen(false);
     
-    // 다음 틱에서 해당 필드로 포커스 이동 (렌더링 완료 후)
-    setTimeout(() => {
-      if (errorField) {
-        switch (errorField) {
-          case "name":
-            nameRef.current?.focus();
-            break;
-          case "email":
-            emailRef.current?.focus();
-            break;
-          case "phone":
-            phoneRef.current?.focus();
-            break;
-          case "gender":
-            genderRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
-            break;
-          case "age":
-            ageRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
-            ageRef.current?.focus();
-            break;
-        }
-      }
-    }, 0);
+    // 에러 필드로 포커스 이동
+    if (errorField) {
+      focusField(errorField);
+    }
   };
 
   // 에러가 있을 때 실행되는 함수
@@ -145,11 +141,8 @@ export function UserFormDialog2({ onSubmit }: UserFormDialog2Props) {
       const firstField = fieldNames[0];
       const errorMsg = errors[firstField].message;
       
-      // 에러 메시지와 필드 저장
       setErrorMessage(errorMsg);
       setErrorField(firstField);
-      
-      // 에러 다이얼로그 표시
       setErrorDialogOpen(true);
     }
   };
@@ -167,7 +160,7 @@ export function UserFormDialog2({ onSubmit }: UserFormDialog2Props) {
             </DialogDescription>
           </DialogHeader>
 
-            {/* 구분선 추가 */}
+          {/* 구분선 추가 */}
           <Separator className="my-2" />
 
           <Form {...form}>
@@ -182,7 +175,7 @@ export function UserFormDialog2({ onSubmit }: UserFormDialog2Props) {
                   <FormItem className="flex items-center gap-4">
                     <FormLabel className="min-w-[80px] text-right mb-0">이름</FormLabel>
                     <FormControl className="flex-1">
-                      <Input placeholder="홍길동" {...field} ref={nameRef} />
+                      <Input placeholder="홍길동" {...field} />
                     </FormControl>
                   </FormItem>
                 )}
@@ -195,7 +188,7 @@ export function UserFormDialog2({ onSubmit }: UserFormDialog2Props) {
                   <FormItem className="flex items-center gap-4">
                     <FormLabel className="min-w-[80px] text-right mb-0">이메일</FormLabel>
                     <FormControl className="flex-1">
-                      <Input placeholder="example@email.com" {...field} ref={emailRef} />
+                      <Input placeholder="example@email.com" {...field} />
                     </FormControl>
                   </FormItem>
                 )}
@@ -208,7 +201,7 @@ export function UserFormDialog2({ onSubmit }: UserFormDialog2Props) {
                   <FormItem className="flex items-center gap-4">
                     <FormLabel className="min-w-[80px] text-right mb-0">전화번호</FormLabel>
                     <FormControl className="flex-1">
-                      <Input placeholder="01012345678" {...field} ref={phoneRef} />
+                      <Input placeholder="01012345678" {...field} />
                     </FormControl>
                   </FormItem>
                 )}
@@ -218,10 +211,11 @@ export function UserFormDialog2({ onSubmit }: UserFormDialog2Props) {
                 control={form.control}
                 name="gender"
                 render={({ field }) => (
-                  <FormItem ref={genderRef} className="flex items-center gap-4">
+                  <FormItem className="flex items-center gap-4">
                     <FormLabel className="min-w-[80px] text-right mb-0">성별</FormLabel>
                     <FormControl>
                       <RadioGroup
+                        id="gender"
                         onValueChange={field.onChange}
                         defaultValue={field.value}
                         className="flex space-x-4"
@@ -261,7 +255,7 @@ export function UserFormDialog2({ onSubmit }: UserFormDialog2Props) {
                         onValueChange={field.onChange}
                         defaultValue={field.value}
                       >
-                        <SelectTrigger ref={ageRef}>
+                        <SelectTrigger>
                           <SelectValue placeholder="연령대를 선택해주세요" />
                         </SelectTrigger>
                         <SelectContent>
