@@ -63,8 +63,8 @@ export default function Home() {
       <Link href={"/table01"}>
         <h4>table01</h4>
       </Link>
-      <Link href={"/popup/test01"}>
-        <h4>팝업1</h4>
+      <Link href={"/login"}>
+        <h4>supabase 로그인</h4>
       </Link>
       {/* Link 대신 버튼으로 변경하여 클릭 시 다이얼로그를 직접 표시 */}
       <button onClick={() => setShowUserForm(true)}>
