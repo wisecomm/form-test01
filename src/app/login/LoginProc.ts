@@ -1,4 +1,4 @@
-import { ApiData, ApiResponse, xfetch } from "@/procx/auth/XFetch";
+import { ApiData, ApiResponse, xfetch } from "@/procx/XFetch";
 
 export interface ILoginData {
   corp_code: string;

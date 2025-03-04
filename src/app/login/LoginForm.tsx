@@ -4,7 +4,7 @@ import { useState } from "react";
 import { supabase, SupabaseAuthError } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 import { ILoginData, setLogin } from "./LoginProc";
-import { ApiResponse, xfetch } from "@/procx/auth/XFetch";
+import { ApiResponse, xfetch } from "@/procx/XFetch";
 export default function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
