@@ -5,57 +5,82 @@ import { supabase, SupabaseAuthError } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 import { ILoginData, setLogin } from "./LoginProc";
 import { ApiResponse, xfetch } from "@/procx/XFetch";
+
+import { useUserStore } from "@/store/useUserStore"; 
+import { userInfo } from "@/types/userInfo"; 
+
 export default function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
+  
+  // Correct way to use zustand hooks
+  const saveUser = useUserStore((state) => state.saveUser);
 
-  const [logindata, setLogindata] = useState<ILoginData | null>(null);
+  const isLogin = useUserStore((state) => state.isLogin);
+  const token = useUserStore((state) => state.user?.token);
+  
+  const router = useRouter();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    const result = await setLogin("superadmin", "1234");
-    if (!result) {
-      console.log("통신 에러 ===");
-      return;
-    }
-
-    if (result.code !== "0000") {
-      console.log(
-        "데이터 에러 ===" +
-          (result?.code || "unknown") +
-          " 메시지:" +
-          (result?.message || "unknown")
-      );
-      return;
-    }
-    console.log("성공 : " + JSON.stringify(result.data));
-    setLogindata(result.data);
-    console.log("성공 : " + logindata?.key);
-
-    setLoading(false);
-    /*
+    setError(null);
+    
     try {
+/*
+      // Example API login
+      const result = await setLogin(email, password);
+
+      if (!result) {
+        setError("통신 에러가 발생했습니다.");
+        return;
+      }
+
+      if (result.code !== "0000") {
+        setError(`오류: ${result?.message || "알 수 없는 오류"}`);
+        return;
+      }
+*/
+      // Save user data to Zustand store
+//      const userData = result.data;
+      const user: userInfo = {
+        id: 'aa',
+        email: 'bb',
+        name: 'cc',
+        role: 'dd',
+        token: '1234-token',
+      };
+      saveUser(user);
+
+      // Optional: Use Supabase for session management if needed
+      /*
       const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
       if (error) throw error;
+      */
 
-      router.push("/"); // Redirect to home page after login
-      router.refresh(); // Refresh to update auth state
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+//      router.push("/"); // Redirect to home page after login
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
-      const authError = err as SupabaseAuthError;
-      setError(authError.message || "로그인 중 오류가 발생했습니다.");
+      console.error("Login error:", err);
+      setError(err?.message || "로그인 중 오류가 발생했습니다.");
     } finally {
       setLoading(false);
     }
-*/
+  };
+
+  const handleGetLoginInfo = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    console.log("isLogin: ", isLogin);
+    console.log("token: ", token);
+
   };
 
   return (
@@ -104,12 +129,18 @@ export default function LoginForm() {
         </div>
 
         <div className="flex items-center justify-between">
-          <button
+        <button
             type="submit"
             disabled={loading}
             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full"
           >
             {loading ? "로그인 중..." : "로그인"}
+          </button>
+          <button
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full"
+            onClick={handleGetLoginInfo}
+          >
+            {"로그인 정보"}
           </button>
         </div>
       </form>

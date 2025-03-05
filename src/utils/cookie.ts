@@ -5,7 +5,7 @@ export const setCookie = (name: string, value: string, days: number) => {
   document.cookie = `${name}=${value}; ${expires}; path=/`;
 };
 
-export const getCookie = (name: string): string | null => {
+const getCookie = (name: string): string | null => {
   const nameEQ = `${name}=`;
   const ca = document.cookie.split(";");
   for (let i = 0; i < ca.length; i++) {
@@ -21,4 +21,7 @@ export const getToken = () => {
 };
 export const setToken = (token: string) => {
   setCookie("accessToken", token, 1);
+};
+export const deleteToken = () => {
+  document.cookie = "";
 };
